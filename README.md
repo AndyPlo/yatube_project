@@ -20,8 +20,8 @@
 
 ## Технологии
 
-Python 3.7
-Django 2.2.19
+- Python 3.7
+- Django 2.2.19
 
 ## Запуск проекта в dev-режиме
 
@@ -31,6 +31,4 @@ Django 2.2.19
 
 ## Авторы
 
- Андрей Плотников
-
-> Written with [StackEdit](https://stackedit.io/).
+ Андрей Плотников (Andy.Plo@yandex.ru)
