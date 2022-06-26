@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}    
+  Последние объявления на сайте
+{% endblock %}
+
+{% block content %}
+{% include 'includes/switcher.html' %}
+  <h1>Последние обновления на сайте</h1>
+  {% for post in page_obj %}
+    {% include 'includes/post_card.html' %}
+    {% if not forloop.last %}<hr>{% endif %}
+  {% endfor %}
+{% endblock %} 

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+  Об авторе проекта
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8 p-5">
+    <div class="card">
+      <div class="card-header">
+        Приветствие от автора:
+      </div>
+      <div class="card-body row">
+        <aside class="col-12 col-md-3">
+          <img src="{% static 'img/author_pic.png' %}" class="card-img-top"
+            alt="Фото автора">
+        </aside>
+        <article class="col-12 col-md-9">
+          <p>Добрый день! Меня зовут Андрей Плотников, я являюсь студентом
+            факультета backend-разработки Яндекс.Практикум и с удовольствием
+            представляю вам свой первый проект. Надеюсь вам он понравится!
+          </p>
+          <p>
+            С любыми вопросами и предложениями можете обращаться ко мне по
+            электронной почте:
+            <a href="mailto:Andy.Plo@yandex.ru">Andy.Plo@yandex.ru</a>
+          </p>
+        </article>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Технологии{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8 p-5">
+    <div class="card">
+      <div class="card-header">
+        При создании сайта использованы следующие технологии:
+      </div>
+      <div class="card-body row">
+        <aside class="col-12 col-md-3">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              Bootstrap
+            </li>
+            <li class="list-group-item">
+              Django
+            </li>
+            <li class="list-group-item">
+              Git
+            </li>
+            <li class="list-group-item">
+              Python
+            </li>
+          </ul>
+        </aside>
+        <article class="col-12 col-md-9">
+          <p>Настоящий сайт создан в рамках учебного проекта Яндекс.Практикум
+            факультета backend-разработки. Сайт представляет собой социальную
+            сеть для публикации личных дневников. Серверная часть разработана с
+            использованием Django-фреймворка, клиентская часть создана на
+            основе предложенных авторами курса шаблонов, адаптированных для
+            использования Django ORM и django-тегов.
+          </p>
+        </article>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
