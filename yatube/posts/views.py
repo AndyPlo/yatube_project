@@ -14,7 +14,7 @@ def index(request):
     return render(
         request,
         'posts/index.html',
-        {'page_obj': page_obj}
+        {'page_obj': page_obj, 'index': True}
     )
 
 
@@ -27,7 +27,7 @@ def group_posts(request, slug):
     return render(
         request,
         'posts/group_list.html',
-        {'group': group, 'page_obj': page_obj}
+        {'group': group, 'page_obj': page_obj, 'is_group': True}
     )
 
 
@@ -138,7 +138,7 @@ def follow_index(request):
     return render(
         request,
         'posts/follow.html',
-        {'page_obj': page_obj}
+        {'page_obj': page_obj, 'follow': True}
     )
 
 

@@ -1,11 +1,21 @@
 {% load thumbnail %}
 <article>
+  <div class="card mb-3">
+    <div class="card-body">
   <ul>
     {% if not is_profile %}
     <li>
-      Автор: {{ post.author.get_full_name }}
-      (<a href="{% url 'posts:profile' post.author.username %}">все посты пользователя</a>)
+      Автор: 
+      <a href="{% url 'posts:profile' post.author.username %}">{{ post.author.get_full_name }}</a>
     </li>
+    {% endif %}
+    {% if not is_group %}
+      {% if post.group %}
+      <li>
+        Группа:
+        <a href="{% url 'posts:group_list' post.group.slug %}">{{ post.group.title }}</a>
+      </li>
+      {% endif %}
     {% endif %}
     <li>
       Дата публикации: {{ post.pub_date|date:"d E Y" }}
@@ -15,9 +25,13 @@
     <img class="card-img my-2" src="{{ im.url }}">
   {% endthumbnail %}
   <p>{{ post.text|linebreaks }}</p>
-  <a href="{% url 'posts:post_detail' post.pk %}">подробная информация</a>
+  <a class="btn btn-primary" href="{% url 'posts:post_detail' post.pk %}">
+    комментировать
+  </a>
+  </div>
+</div>
 </article>
-{% if post.group %}
+{% comment %} {% if post.group %}
   <a href="{% url 'posts:group_list' post.group.slug %}">
     все записи группы "{{ post.group.title }}"</a>
-{% endif %}
+{% endif %} {% endcomment %}

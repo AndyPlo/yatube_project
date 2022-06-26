@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 
 {% block title %}    
-  Избранные авторы
+  Лента постов
 {% endblock %}
 
 {% block content %}
+<h1>Лента постов</h1>
 {% include 'includes/switcher.html' %}
-  <h1>Избранные авторы</h1>
   {% for post in page_obj %}
     {% include 'includes/post_card.html' %}
     {% if not forloop.last %}<hr>{% endif %}
