@@ -1,0 +1,42 @@
+{% load user_filters %}
+{% if post.comments.count != 0  %}
+  <!-- Акоордеон с комментариями по умолчанию свернут -->
+  <div class="accordion" id="accordionExample">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="heading{{ post.id }}">
+        <button class="accordion-button collapsed" type="button"
+          data-bs-toggle="collapse" data-bs-target="#collapse{{ post.id }}"
+          aria-expanded="false" aria-controls="collapse{{ post.id }}">
+            Комментарии ({{ post.comments.count }}):
+        </button>
+      </h2>
+      <div id="collapse{{ post.id }}" class="accordion-collapse collapse"
+        aria-labelledby="heading{{ post.id }}" style="">
+        <div class="accordion-body">
+          <ul class="list-group list-group-flush">
+            {% for comment in comments %}
+              {% if post == comment.post %}
+                <li class="list-group-item">
+                  <div class="row">
+                    <aside class="col-12 col-md-3">
+                      <a href="{% url 'posts:profile' comment.author.username %}">
+                        {{ comment.author.username }}
+                      </a>
+                      <br>
+                      <small>
+                        ({{ comment.created }})
+                      </small>
+                    </aside>
+                    <article class="col-12 col-md-9">
+                      {{ comment.text|linebreaks }}
+                    </article>
+                  </div>
+                </li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+</div>
+{% endif %}

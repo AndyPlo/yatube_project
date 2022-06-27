@@ -9,6 +9,5 @@
 {% include 'includes/switcher.html' %}
   {% for post in page_obj %}
     {% include 'includes/post_card.html' %}
-    {% comment %} {% if not forloop.last %}<hr>{% endif %} {% endcomment %}
   {% endfor %}
 {% endblock %} 

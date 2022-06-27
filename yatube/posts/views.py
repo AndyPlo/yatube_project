@@ -1,20 +1,23 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render, redirect
 from .forms import PostForm, CommentForm
-from .models import Follow, Post, Group, User
+from .models import Follow, Post, Group, User, Comment
 from .utils import posts_on_page
 from django.views.decorators.cache import cache_page
+from django.core.cache import cache
 
 
 @cache_page(20, key_prefix='index_page')
 def index(request):
     """Главная страница - список постов."""
     posts = Post.objects.all().select_related('author', 'group')
+    comments = Comment.objects.all().select_related('post', 'author')
     page_obj = posts_on_page(request, posts)
     return render(
         request,
         'posts/index.html',
-        {'page_obj': page_obj, 'index': True}
+        {'page_obj': page_obj, 'comments': comments,
+         'is_index': True}
     )
 
 
@@ -22,12 +25,14 @@ def group_posts(request, slug):
     """Страница с постами одной группы."""
     group = get_object_or_404(Group, slug=slug)
     posts = group.posts.all().select_related('author', 'group'
-                                              ).order_by('pub_date')
+                                             ).order_by('pub_date')
     page_obj = posts_on_page(request, posts)
+    comments = Comment.objects.all().select_related('post', 'author')
     return render(
         request,
         'posts/group_list.html',
-        {'group': group, 'page_obj': page_obj, 'is_group': True}
+        {'group': group, 'page_obj': page_obj,
+         'comments': comments, 'is_group': True}
     )
 
 
@@ -42,10 +47,11 @@ def profile(request, username):
             author=author
         ).exists()
     )
+    comments = Comment.objects.all().select_related('post', 'author')
     return render(
         request,
         'posts/profile.html',
-        {'page_obj': page_obj, 'author': author,
+        {'page_obj': page_obj, 'author': author, 'comments': comments,
          'is_profile': True, 'following': following}
     )
 
@@ -135,10 +141,11 @@ def follow_index(request):
         author__following__user=request.user
     ).select_related('author', 'group')
     page_obj = posts_on_page(request, posts)
+    comments = Comment.objects.all().select_related('post', 'author')
     return render(
         request,
         'posts/follow.html',
-        {'page_obj': page_obj, 'follow': True}
+        {'page_obj': page_obj, 'is_follow': True, 'comments': comments}
     )
 
 
@@ -161,3 +168,42 @@ def profile_unfollow(request, username):
     if following.exists():
         following.delete()
     return redirect('posts:profile', author.username)
+
+
+@login_required
+def comment_delete(request, post_id, comment_id, check):
+    """Удаление комментария."""
+    comment = get_object_or_404(Comment, pk=comment_id)
+    if request.user == comment.author:
+        if check == 'check':
+            return render(
+                request,
+                'posts/comment_delete_check.html',
+                {'post_id': post_id, 'comment_id': comment_id}
+            )
+        elif check == 'no':
+            return redirect('posts:post_detail', post_id=post_id)
+        else:
+            comment.delete()
+            return redirect('posts:post_detail', post_id=post_id)
+    return redirect('posts:post_detail', post_id=post_id)
+
+
+@login_required
+def post_delete(request, post_id, check):
+    """Удаление поста."""
+    post = get_object_or_404(Post, pk=post_id)
+    if request.user == post.author:
+        if check == 'check':
+            return render(
+                request,
+                'posts/post_delete_check.html',
+                {'post_id': post_id}
+            )
+        elif check == 'no':
+            return redirect('posts:post_detail', post_id=post_id)
+        else:
+            post.delete()
+            cache.clear()
+            return redirect('posts:profile', username=request.user)
+    return redirect('posts:post_detail', post_id=post_id)

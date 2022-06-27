@@ -15,63 +15,126 @@
         </li>
         {% if post.group %}
           <li class="list-group-item">
-            Группа: {{ post.group.title }}<br>
-            (<a href="{% url 'posts:group_list' post.group.slug %}">все записи группы</a>)
+            Группа:
+            <a href="{% url 'posts:group_list' post.group.slug %}">
+              {{ post.group.title }}
+            </a>
           </li>
         {% endif %}
         <li class="list-group-item">
-          Автор: {{ post.author.get_full_name }} ({{ post.author.username }})
+          Автор:
+          <a href="{% url 'posts:profile' post.author.username %}">
+            {{ post.author.get_full_name }} </a> ({{ post.author.username }})
         </li>
         <li class="list-group-item d-flex justify-content-between align-items-center">
           Всего постов автора:  <span >{{ post.author.posts.count}}</span>
         </li>
-        <li class="list-group-item">
-          <a href="{% url 'posts:profile' post.author.username %}">
-            все посты пользователя
-          </a>
-        </li>
       </ul>
     </aside>
     <article class="col-12 col-md-9">
-      {% thumbnail post.image "960x339" crop="top" upscale=True as im %}
-        <img class="card-img my-2" src="{{ im.url }}">
-      {% endthumbnail %}
-      <p>
-        {{ post.text|linebreaks }}
-      </p>
-      {% if post.author == user %}
-        <a class="btn btn-primary" href="{% url 'posts:post_edit' post.pk %}">
-          редактировать запись
-        </a>
-      {% endif %}
-      {% if user.is_authenticated %}
-        <div class="card my-4">
-          <h5 class="card-header">Добавить комментарий:</h5>
-          <div class="card-body">
-            <form method="post" action="{% url 'posts:add_comment' post.id %}">
-              {% csrf_token %}      
-              <div class="form-group mb-2">
-                {{ form.text|addclass:"form-control" }}
-              </div>
-              <button type="submit" class="btn btn-primary">Отправить</button>
-            </form>
-          </div>
-        </div>
-      {% endif %}
-      {% for comment in comments %}
-        <div class="media mb-4">
-          <div class="media-body">
-            <h5 class="mt-0">
-              <a href="{% url 'posts:profile' comment.author.username %}">
-                {{ comment.author.username }}
+      <div class="card bg-light mb-3">
+        <div class="card-body">
+          {% thumbnail post.image "960x339" crop="top" upscale=True as im %}
+            <img class="card-img my-2" src="{{ im.url }}">
+          {% endthumbnail %}
+          <p>
+            {{ post.text|linebreaks }}
+          </p>
+          <!-- Группа кнопок-ссылок после текста поста -->
+          {% if not is_profile %}
+            <a class="btn btn-outline-secondary my-3"
+              href="{% url 'posts:profile' post.author.username %}">
+              Все посты автора
+            </a>
+          {% endif %}
+          {% if not is_group %}
+            {% if post.group %}
+              <a class="btn btn-outline-secondary my-3"
+                href="{% url 'posts:group_list' post.group.slug %}">
+                Все посты группы
               </a>
-            </h5>
-            <p>
-              {{ comment.text }}
-            </p>
-          </div>
+            {% endif %}
+          {% endif %}
+          {% if post.author == user %}
+            <a class="btn btn-outline-secondary my-3"
+              href="{% url 'posts:post_edit' post.pk %}">
+              Редактировать запись
+            </a>
+            <a class="btn btn-outline-secondary my-3"
+              href="{% url 'posts:post_delete' post.pk 'check' %}">
+              Удалить запись
+            </a>
+          {% endif %}
+          <!-- Форма добавление комментария -->
+          {% if user.is_authenticated %}
+            <div class="card my-4">
+              <h5 class="card-header">Добавить комментарий:</h5>
+              <div class="card-body">
+                <form method="post"
+                  action="{% url 'posts:add_comment' post.id %}">
+                  {% csrf_token %}      
+                  <div class="form-group mb-2">
+                    {{ form.text|addclass:"form-control" }}
+                  </div>
+                  <button type="submit" class="btn btn-secondary">
+                    Отправить
+                  </button>
+                </form>
+              </div>
+            </div>
+          {% endif %}
+          <!-- Аккордеон со списком комментариев, по умолчанию развернут -->
+          {% if post.comments.count != 0  %}
+            <div class="accordion" id="accordionExample">
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="heading{{ post.id }}">
+                  <button class="accordion-button" type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#collapse{{ post.id }}"
+                    aria-expanded="false"
+                    aria-controls="collapse{{ post.id }}"
+                    >
+                      Комментарии ({{ post.comments.count }}):
+                  </button>
+                </h2>
+                <div id="collapse{{ post.id }}"
+                  class="accordion-collapse collapse show"
+                  aria-labelledby="heading{{ post.id }}" style=""
+                  >
+                  <div class="accordion-body">
+                    <ul class="list-group list-group-flush">
+                      {% for comment in comments %}
+                        {% if post == comment.post %}
+                          <li class="list-group-item">
+                            <div class="row">
+                              <!-- Слева имя автора комментария -->
+                              <aside class="col-12 col-md-3">
+                                <a href="{% url 'posts:profile' comment.author.username %}">
+                                  {{ comment.author.username }}
+                                </a><br> <small>({{ comment.created }})</small>
+                                {% if comment.author == user %}
+                                  <a class="btn btn-outline-secondary btn-sm my-1"
+                                    href="{% url 'posts:comment_delete' comment.post.pk comment.pk 'check' %}">
+                                    Удалить
+                                  </a>
+                                {% endif %}
+                              </aside>
+                              <!-- Справа текст комментария -->
+                              <article class="col-12 col-md-9">
+                                {{ comment.text|linebreaks }}
+                              </article>
+                            </li>
+                        {% endif %}
+                      {% endfor %}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+          <!-- Конец аккордеона -->
         </div>
-      {% endfor %}              
+      </div>
     </article>
-  </div> 
+  </div>
 {% endblock %} 

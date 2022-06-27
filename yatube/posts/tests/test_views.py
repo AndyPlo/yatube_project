@@ -9,7 +9,7 @@ from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.cache import cache
 
-from ..models import Follow, Group, Post
+from ..models import Follow, Group, Post, Comment
 
 User = get_user_model()
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
@@ -253,3 +253,34 @@ class PostsViewsTests(TestCase):
         """
         response = self.authorized_client.get(reverse('posts:follow_index'))
         self.assertNotIn(PostsViewsTests.post, response.context['page_obj'])
+
+    def test_posts_views_comments_in_context(self):
+        """
+        [!] Комментарии в контексте основных страниц.
+        """
+        page_list = [
+            reverse('posts:index'),
+            reverse('posts:group_list', kwargs={'slug': 'testslug'}),
+            reverse('posts:profile', kwargs={'username': 'Author'}),
+            reverse('posts:follow_index')
+        ]
+        another_author = User.objects.create_user(
+            username='AnotherAuthor')
+        comment = Comment.objects.create(
+            text='Комментарий',
+            post=PostsViewsTests.post,
+            author=another_author
+        )
+        Follow.objects.create(
+            user=PostsViewsTests.author,
+            author=another_author
+        )
+        for page in page_list:
+            with self.subTest(page=page):
+                response = self.authorized_client.get(page)
+                self.assertEqual(
+                    response.context['comments'][0].text, comment.text)
+                self.assertEqual(
+                    response.context['comments'][0].author, comment.author)
+                self.assertEqual(
+                    response.context['comments'][0].created, comment.created)

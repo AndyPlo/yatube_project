@@ -1,35 +1,35 @@
 {% extends 'base.html' %}
 
 {% block title %}    
-  Профайл пользователя {{ author.get_full_name }}
+  Профайл автора {{ author.get_full_name }}
 {% endblock %}
 
 {% block content %}
 <h1>
-  Все посты пользователя {{ author.get_full_name }}
-</h1>
-<h3>
-  Всего постов: {{ author.posts.count }}
-</h3>
-{% if user.is_authenticated and author != user %}
+  Все посты автора: {{ author.get_full_name }}
+  {% if user.is_authenticated and author != user %}
   {% if following %}
     <a
-      class="btn btn-lg btn-light"
+      class="btn btn-outline-secondary"
       href="{% url 'posts:profile_unfollow' author.username %}" role="button"
     >
       Отписаться
     </a>
   {% else %}
     <a
-      class="btn btn-lg btn-primary"
+      class="btn btn-secondary"
       href="{% url 'posts:profile_follow' author.username %}" role="button"
     >
       Подписаться
     </a>
   {% endif %}
 {% endif %}
+</h1>
+<h3>
+  Всего постов: {{ author.posts.count }}
+</h3>
 {% for post in page_obj %}
 {% include 'includes/post_card.html' %}
-{% if not forloop.last %}<hr>{% endif %}
+{% comment %} {% if not forloop.last %}<hr>{% endif %} {% endcomment %}
 {% endfor %}
 {% endblock %} 

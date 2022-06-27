@@ -13,6 +13,5 @@
   </p>
   {% for post in page_obj %}
     {% include 'includes/post_card.html' %}
-    {% if not forloop.last %}<hr>{% endif %}
   {% endfor %}
 {% endblock %} 
