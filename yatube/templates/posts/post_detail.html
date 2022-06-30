@@ -58,12 +58,12 @@
           {% if post.author == user %}
             <a class="btn btn-outline-secondary my-3"
               href="{% url 'posts:post_edit' post.pk %}">
-              Редактировать запись
+              Редактировать пост
             </a>
-            <a class="btn btn-outline-secondary my-3"
-              href="{% url 'posts:post_delete' post.pk 'check' %}">
-              Удалить запись
-            </a>
+            <button type="button" class="btn btn-outline-secondary"
+              data-bs-toggle="modal" data-bs-target="#modal1">
+                Удалить пост
+            </button>
           {% endif %}
           <!-- Форма добавление комментария -->
           {% if user.is_authenticated %}
@@ -113,10 +113,10 @@
                                   {{ comment.author.username }}
                                 </a><br> <small>({{ comment.created }})</small>
                                 {% if comment.author == user %}
-                                  <a class="btn btn-outline-secondary btn-sm my-1"
-                                    href="{% url 'posts:comment_delete' comment.post.pk comment.pk 'check' %}">
-                                    Удалить
-                                  </a>
+                                  <button type="button" class="btn btn-outline-secondary btn-sm my-1"
+                                    data-bs-toggle="modal" data-bs-target="#modal2">
+                                      удалить
+                                  </button>
                                 {% endif %}
                               </aside>
                               <!-- Справа текст комментария -->
@@ -125,6 +125,29 @@
                               </article>
                             </li>
                         {% endif %}
+                        <!-- Окно подтверждения удаления комментария -->
+                        <div class="modal fade" id="modal2" tabindex="-1">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title">Требуется подтверждение</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                              </div>
+                              <div class="modal-body">
+                                <p>Вы уверены, что хотите удалить комментарий? Восстановить его будет невозможно!</p>
+                              </div>
+                              <div class="modal-footer">
+                                <a class="btn btn-danger my-3"
+                                  href="{% url 'posts:comment_delete' comment.post.pk comment.pk %}">
+                                    Да, я уверен!
+                                  </a>
+                                <a class="btn btn-secondary my-3" data-bs-dismiss="modal">
+                                    Нет, я передумал.
+                                </a>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       {% endfor %}
                     </ul>
                   </div>
@@ -136,5 +159,28 @@
         </div>
       </div>
     </article>
+  </div>
+  <!-- Окно подтверждения удаления поста -->
+  <div class="modal fade" id="modal1" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Требуется подтверждение</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p>Вы уверены, что хотите удалить пост? Восстановить его будет невозможно!</p>
+        </div>
+        <div class="modal-footer">
+          <a class="btn btn-danger my-3"
+            href="{% url 'posts:post_delete' post.pk %}">
+              Да, я уверен!
+            </a>
+          <a class="btn btn-secondary my-3" data-bs-dismiss="modal">
+              Нет, я передумал.
+          </a>
+        </div>
+      </div>
+    </div>
   </div>
 {% endblock %} 

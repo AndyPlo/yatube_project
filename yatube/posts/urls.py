@@ -15,7 +15,7 @@ urlpatterns = [
     path('create/', views.post_create, name='post_create'),
     path('posts/<int:post_id>/edit/', views.post_edit, name='post_edit'),
     path(
-        'posts/<int:post_id>/delete/<slug:check>/',
+        'posts/<int:post_id>/delete/',
         views.post_delete,
         name='post_delete'
     ),
@@ -38,7 +38,7 @@ urlpatterns = [
         name='add_comment'
     ),
     path(
-        'posts/<int:post_id>/comment/<int:comment_id>/delete/<slug:check>/',
+        'posts/<int:post_id>/comment/<int:comment_id>/delete/',
         views.comment_delete, name='comment_delete'
     ),
 ]

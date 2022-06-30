@@ -171,39 +171,19 @@ def profile_unfollow(request, username):
 
 
 @login_required
-def comment_delete(request, post_id, comment_id, check):
-    """Удаление комментария."""
-    comment = get_object_or_404(Comment, pk=comment_id)
-    if request.user == comment.author:
-        if check == 'check':
-            return render(
-                request,
-                'posts/comment_delete_check.html',
-                {'post_id': post_id, 'comment_id': comment_id}
-            )
-        elif check == 'no':
-            return redirect('posts:post_detail', post_id=post_id)
-        else:
-            comment.delete()
-            return redirect('posts:post_detail', post_id=post_id)
-    return redirect('posts:post_detail', post_id=post_id)
-
-
-@login_required
-def post_delete(request, post_id, check):
+def post_delete(request, post_id):
     """Удаление поста."""
     post = get_object_or_404(Post, pk=post_id)
     if request.user == post.author:
-        if check == 'check':
-            return render(
-                request,
-                'posts/post_delete_check.html',
-                {'post_id': post_id}
-            )
-        elif check == 'no':
-            return redirect('posts:post_detail', post_id=post_id)
-        else:
-            post.delete()
-            cache.clear()
-            return redirect('posts:profile', username=request.user)
+        post.delete()
+        cache.clear()
+    return redirect('posts:profile', username=request.user)
+
+
+@login_required
+def comment_delete(request, post_id, comment_id):
+    """Удаление комментария."""
+    comment = get_object_or_404(Comment, pk=comment_id)
+    if request.user == comment.author:
+        comment.delete()
     return redirect('posts:post_detail', post_id=post_id)
